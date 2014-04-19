@@ -41,15 +41,11 @@ module RailsAppVersioning
 
     def git_release
       current_branch = git_current_branch
-      if current_branch == 'master' || confirm_branch(current_branch)
-        output = git_checkout(current_branch)
-        output += git_pull(current_branch)
-        output += git_commit
-        output += git_tag
-        output += git_push(current_branch)
-      else
-        output = "Aborting tag. Check out the correct branch and try again."
-      end
+      output = git_checkout(current_branch)
+      output += git_pull(current_branch)
+      output += git_commit
+      output += git_tag
+      output += git_push(current_branch)
       output
     end
 
@@ -61,8 +57,13 @@ module RailsAppVersioning
 
     def release(category)
       bump(category)
-      write(version_name)
-      git_release
+      current_branch = git_current_branch
+      if confirm_branch(current_branch)
+        write(version_name)
+        git_release
+      else
+        output = "Aborting tag. Check out the correct branch and try again."
+      end
     end
   end
 end
